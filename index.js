@@ -10,7 +10,13 @@ import cors from 'cors';
 dotenv.config()
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: [
+        "http://localhost:5173",                // local dev
+        "https://crystal-beauty-clear-kta1lqtd9-sachins-projects-a17017c3.vercel.app/"      // production frontend
+    ],
+    credentials: true
+}));
 
 mongoose.connect(process.env.MONGO_URL).then(
     ()=>{
