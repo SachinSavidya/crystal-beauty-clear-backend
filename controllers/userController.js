@@ -3,7 +3,19 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import axios from "axios";
+import nodemailer from "nodemailer";
 dotenv.config()
+
+const transport = nodemailer.createTransport({
+    service : "gmail",
+    host : "smtp.gmail.com",
+    port : 587,
+    secure : false,
+    auth : {
+        user : process.env.EMAIL,
+        pass : process.env.PASSWORD
+    }
+})
 
 export function saveUser(req,res){
     if(req.body.role == "admin"){
@@ -177,3 +189,33 @@ export function getCurrentUser(req,res){
     })
 
 }
+
+export function sendOTP(req,res){
+    const email = req.body.email;
+    const otp = Math.floor(Math.random()*9000) + 1000;
+
+    const message = {
+        from : process.env.EMAIL,
+        to : email,
+        subject : "OTP for verification",
+        text : "Your OTP is : " + otp
+    }
+
+    transport.sendMail(message,
+        (err)=>{
+            if(err){
+                console.log(err);
+                res.status(500).json({
+                    message : "Error sending email"
+                })
+            }else{
+                res.json({
+                    message : "OTP sent successfully",
+                    otp : otp
+                })
+            }
+        }
+    )
+}
+
+//hknt boxq dlbb cisq
