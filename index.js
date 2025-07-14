@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // local dev
-      "https://crystal-beauty-clear.vercel.app/", // production frontend
+      "https://crystal-beauty-clear.vercel.app", // production frontend
     ],
     credentials: true,
   })
