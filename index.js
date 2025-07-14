@@ -10,6 +10,8 @@ import cors from "cors";
 dotenv.config();
 
 const app = express();
+
+// CORS configuration - must be before other middleware
 app.use(
   cors({
     origin: [
@@ -17,9 +19,15 @@ app.use(
       "https://crystal-beauty-clear.vercel.app", // production frontend
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// Body parser middleware
+app.use(bodyParser.json());
+
+// Database connection
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {
@@ -29,12 +37,15 @@ mongoose
     console.log("Connection failed");
   });
 
-app.use(bodyParser.json());
-app.use(verifyJWT);
-
+// Routes - apply authentication middleware only to protected routes
 app.use("/api/product", productRouter);
 app.use("/api/user", userRouter);
-app.use("/api/order", orderRouter);
+app.use("/api/order", verifyJWT, orderRouter); // Apply auth only to orders if needed
+
+// OR if you need auth on all routes, apply it selectively:
+// app.use("/api/product", verifyJWT, productRouter);
+// app.use("/api/user", userRouter); // Usually login/register don't need auth
+// app.use("/api/order", verifyJWT, orderRouter);
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");
