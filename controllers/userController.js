@@ -205,6 +205,7 @@ export function sendOTP(req,res){
         (err)=>{
             if(err){
                 console.log(err);
+                console.log("response =>", res);
                 res.status(500).json({
                     message : "Error sending email"
                 })
